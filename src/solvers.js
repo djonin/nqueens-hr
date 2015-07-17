@@ -12,11 +12,17 @@
 
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
+  var makeEmptyMatrix = function(n) {
+    return _(_.range(n)).map(function() {
+      return _(_.range(n)).map(function() {
+        return 0;
+      });
+    });
+  };
 
 window.findNRooksSolution = function(n) {
   var solution;
-  var b = new Board();
-  b.initialize({'n' : n});
+  var b = makeEmptyMatrix(n);
   var currentRow = 0;
   var placeARook = function(freeColBits) {
     if(currentRow === n) {
@@ -27,25 +33,20 @@ window.findNRooksSolution = function(n) {
     while(remainingColBits !== 0) {
       var freeSpotBit = freeColBits & -freeColBits;
       var columnNumber = Math.log(freeSpotBit) / Math.log(2);
-      var row = b.get(currentRow);
-      row[columnNumber] = 1;
-      b.set(currentRow, row);
+      b[currentRow][columnNumber] = 1;
       remainingColBits -= freeSpotBit;
       currentRow++;
       if(placeARook(freeColBits-freeSpotBit)) {
         currentRow--;
         return true;
       }
-      var row = b.get(currentRow);
-      row[columnNumber] = 0;
-      b.set(currentRow, row);
+      b[currentRow][columnNumber] = 0;
     }
     currentRow--;
     return false;
   }
   placeARook(Math.pow(2, n)-1);
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(b));
-  b.n = n;
   return b;
 };
 
@@ -53,8 +54,26 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0; //fixme
+  var currentRow = 0;
 
+  var placeARook = function(freeColBits) {
+    if(currentRow === n) {
+      solutionCount++;
+      currentRow--;
+      return;
+      //solved!
+    }
+    var remainingColBits = freeColBits;
+    while(remainingColBits !== 0) {
+      var freeSpotBit = remainingColBits & -remainingColBits;
+      remainingColBits -= freeSpotBit;
+      currentRow++;
+      placeARook(freeColBits-freeSpotBit);
+    }
+    currentRow--;
+  }
+  placeARook(Math.pow(2, n)-1);
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
