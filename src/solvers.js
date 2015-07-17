@@ -146,7 +146,7 @@ window.countNQueensSolutions = function(n) {
 
     //we're using the n most sighificant bits of the majors
     //and n least significant of the minors,
-    //to get the correct behaviour after shifting
+    //to get the correct result of bitwise & after shifting them
     freeBits = remainingColBits&freeMinorBits&(freeMajorBits>>(n-1));
 
     while(freeBits !== 0) {
